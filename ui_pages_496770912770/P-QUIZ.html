@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quiz - BNBU EAP</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1B8C79',
+                        secondary: '#37436A', 
+                        accent: '#080D1E',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                        'bg-light': '#F9FAFB',
+                        'border-light': '#E5E7EB'
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .quiz-option:hover {
+            background-color: rgba(27, 140, 121, 0.05);
+            border-color: #1B8C79;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .quiz-option.selected {
+            background-color: rgba(27, 140, 121, 0.1);
+            border-color: #1B8C79;
+            color: #1B8C79;
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: #10B981;
+            color: #10B981;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: #EF4444;
+            color: #EF4444;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #1B8C79 0%, #37436A 100%);
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-in-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 bg-opacity-50 min-h-screen">
+    <!-- Modal Backdrop -->
+    <div id="modal-backdrop" class="fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+        <!-- Quiz Modal -->
+        <div id="quiz-modal" class="bg-white rounded-2xl shadow-modal w-full max-w-4xl max-h-[90vh] overflow-hidden slide-up">
+            <!-- Modal Header -->
+            <div id="quiz-header" class="bg-primary text-white p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 id="quiz-title" class="text-2xl font-bold">Grammar Practice Quiz</h1>
+                        <p id="quiz-subtitle" class="text-primary-100 mt-1">Test your understanding of past tense verbs</p>
+                    </div>
+                    <div class="text-right">
+                        <div id="quiz-material" class="text-sm opacity-90">Material: ENG-2025-U3-A</div>
+                        <div id="quiz-time" class="text-sm opacity-90">Time: 15 minutes</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div id="progress-container" class="mt-4">
+                    <div class="flex justify-between text-sm mb-2">
+                        <span id="progress-text">Question 1 of 5</span>
+                        <span id="score-text">Score: 0/5</span>
+                    </div>
+                    <div class="w-full bg-white bg-opacity-20 rounded-full h-2">
+                        <div id="progress-bar" class="progress-bar h-2 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Content -->
+            <div id="quiz-content" class="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                <!-- Question 1 - Multiple Choice -->
+                <div id="question-1" class="quiz-question fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-primary font-bold">1.</span> Choose the correct past tense form:
+                        </h2>
+                        <p class="text-lg text-text-primary mb-6">She ______ to the store yesterday.</p>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="quiz-option border-2 border-border-light rounded-lg p-4 cursor-pointer" data-question="1" data-value="A">
+                                <div class="flex items-center">
+                                    <span class="w-6 h-6 border-2 border-border-light rounded-full flex items-center justify-center mr-3 text-sm font-medium">A</span>
+                                    <span class="text-text-primary">go</span>
+                                </div>
+                            </div>
+                            <div class="quiz-option border-2 border-border-light rounded-lg p-4 cursor-pointer" data-question="1" data-value="B">
+                                <div class="flex items-center">
+                                    <span class="w-6 h-6 border-2 border-border-light rounded-full flex items-center justify-center mr-3 text-sm font-medium">B</span>
+                                    <span class="text-text-primary">goes</span>
+                                </div>
+                            </div>
+                            <div class="quiz-option border-2 border-border-light rounded-lg p-4 cursor-pointer" data-question="1" data-value="C">
+                                <div class="flex items-center">
+                                    <span class="w-6 h-6 border-2 border-border-light rounded-full flex items-center justify-center mr-3 text-sm font-medium">C</span>
+                                    <span class="text-text-primary">went</span>
+                                </div>
+                            </div>
+                            <div class="quiz-option border-2 border-border-light rounded-lg p-4 cursor-pointer" data-question="1" data-value="D">
+                                <div class="flex items-center">
+                                    <span class="w-6 h-6 border-2 border-border-light rounded-full flex items-center justify-center mr-3 text-sm font-medium">D</span>
+                                    <span class="text-text-primary">gone</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Answer Explanation (Hidden initially) -->
+                        <div id="explanation-1" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-green-600 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-green-800 mb-1">Correct Answer: C) went</p>
+                                    <p class="text-green-700 text-sm">
+                                        "Went" is the simple past tense of "go". The sentence refers to a completed action in the past ("yesterday"), so we use simple past tense.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 - Fill in the Blank -->
+                <div id="question-2" class="quiz-question hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-primary font-bold">2.</span> Fill in the blank with the correct past tense verb:
+                        </h2>
+                        <p class="text-lg text-text-primary mb-6">They ______ dinner together last night.</p>
+                        
+                        <div class="mb-4">
+                            <input 
+                                type="text" 
+                                id="blank-answer-2" 
+                                placeholder="Type your answer here..."
+                                class="w-full px-4 py-3 border-2 border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                                maxlength="20"
+                            >
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="check-answer-2" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                Check Answer
+                            </button>
+                            <button id="show-answer-2" class="px-6 py-2 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                Show Answer
+                            </button>
+                        </div>
+                        
+                        <!-- Answer Feedback -->
+                        <div id="feedback-2" class="hidden mt-4 p-4 rounded-lg">
+                            <div class="flex items-start">
+                                <i id="feedback-icon-2" class="mt-1 mr-3 text-lg"></i>
+                                <div>
+                                    <p id="feedback-text-2" class="font-medium mb-1"></p>
+                                    <p id="feedback-explanation-2" class="text-sm"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 - Error Correction -->
+                <div id="question-3" class="quiz-question hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-primary font-bold">3.</span> Identify and correct the grammar error:
+                        </h2>
+                        <p class="text-lg text-text-primary mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                            <strong>Incorrect:</strong> I seed the movie last weekend.
+                        </p>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-text-primary mb-2">Corrected sentence:</label>
+                            <input 
+                                type="text" 
+                                id="correction-3" 
+                                placeholder="Type the corrected sentence..."
+                                class="w-full px-4 py-3 border-2 border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                            >
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="check-correction-3" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                Check Correction
+                            </button>
+                            <button id="show-correction-3" class="px-6 py-2 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                Show Correction
+                            </button>
+                        </div>
+                        
+                        <!-- Correction Feedback -->
+                        <div id="correction-feedback-3" class="hidden mt-4 p-4 rounded-lg">
+                            <div class="flex items-start">
+                                <i id="correction-icon-3" class="mt-1 mr-3 text-lg"></i>
+                                <div>
+                                    <p id="correction-text-3" class="font-medium mb-1"></p>
+                                    <p id="correction-explanation-3" class="text-sm"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 - Short Answer -->
+                <div id="question-4" class="quiz-question hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-primary font-bold">4.</span> Short Answer Question:
+                        </h2>
+                        <p class="text-lg text-text-primary mb-6">
+                            Explain the difference between "I have eaten" and "I ate" in terms of tense and usage.
+                        </p>
+                        
+                        <div class="mb-4">
+                            <textarea 
+                                id="short-answer-4" 
+                                rows="4"
+                                placeholder="Type your answer here..."
+                                class="w-full px-4 py-3 border-2 border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg resize-none"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="submit-answer-4" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                Submit Answer
+                            </button>
+                            <button id="show-model-answer-4" class="px-6 py-2 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                Show Model Answer
+                            </button>
+                        </div>
+                        
+                        <!-- Answer Feedback -->
+                        <div id="short-answer-feedback-4" class="hidden mt-4 p-4 rounded-lg">
+                            <div class="flex items-start">
+                                <i id="short-answer-icon-4" class="mt-1 mr-3 text-lg"></i>
+                                <div>
+                                    <p id="short-answer-text-4" class="font-medium mb-1"></p>
+                                    <div id="model-answer-4" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="font-medium text-blue-800 mb-2">Model Answer:</p>
+                                        <p class="text-blue-700 text-sm">
+                                            "I have eaten" is present perfect tense, used to describe an action that happened at an unspecified time before now or has a connection to the present. 
+                                            "I ate" is simple past tense, used for a completed action at a specific time in the past.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5 - Translation -->
+                <div id="question-5" class="quiz-question hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-primary font-bold">5.</span> Translation:
+                        </h2>
+                        <p class="text-lg text-text-primary mb-6">
+                            Translate the following sentence into English:
+                            <br><br>
+                            <span class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-700">
+                                我昨天学习了英语语法。
+                            </span>
+                        </p>
+                        
+                        <div class="mb-4">
+                            <input 
+                                type="text" 
+                                id="translation-5" 
+                                placeholder="Type your translation here..."
+                                class="w-full px-4 py-3 border-2 border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                            >
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="check-translation-5" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                Check Translation
+                            </button>
+                            <button id="show-correct-translation-5" class="px-6 py-2 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                                Show Correct Translation
+                            </button>
+                        </div>
+                        
+                        <!-- Translation Feedback -->
+                        <div id="translation-feedback-5" class="hidden mt-4 p-4 rounded-lg">
+                            <div class="flex items-start">
+                                <i id="translation-icon-5" class="mt-1 mr-3 text-lg"></i>
+                                <div>
+                                    <p id="translation-text-5" class="font-medium mb-1"></p>
+                                    <div id="correct-translation-5" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="font-medium text-blue-800 mb-2">Correct Translation:</p>
+                                        <p class="text-blue-700 text-sm">I studied English grammar yesterday.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Results (Hidden initially) -->
+                <div id="quiz-results" class="hidden text-center py-8">
+                    <div class="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-trophy text-primary text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-text-primary mb-2">Quiz Completed!</h2>
+                    <p class="text-lg text-text-secondary mb-6">Great job! Here are your results:</p>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div id="final-score" class="text-3xl font-bold text-primary mb-1">0</div>
+                                <div class="text-sm text-text-secondary">Score</div>
+                            </div>
+                            <div class="text-center">
+                                <div id="final-percentage" class="text-3xl font-bold text-secondary mb-1">0%</div>
+                                <div class="text-sm text-text-secondary">Percentage</div>
+                            </div>
+                            <div class="text-center">
+                                <div id="final-grade" class="text-3xl font-bold text-accent mb-1">--</div>
+                                <div class="text-sm text-text-secondary">Grade</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <button id="review-answers" class="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                            Review Answers
+                        </button>
+                        <button id="close-quiz" class="px-8 py-3 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors">
+                            Return to Tutoring
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div id="quiz-footer" class="bg-gray-50 border-t border-border-light p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-text-secondary">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span id="timer">15:00</span>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button id="previous-question" class="px-6 py-2 border border-border-light text-text-secondary rounded-lg hover:bg-gray-50 transition-colors" disabled>
+                            <i class="fas fa-chevron-left mr-2"></i>Previous
+                        </button>
+                        <button id="next-question" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                            Next<i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                        <button id="submit-quiz" class="px-6 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors hidden">
+                            Submit Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quiz state management
+            let currentQuestion = 1;
+            const totalQuestions = 5;
+            let userAnswers = {};
+            let score = 0;
+            let timeLeft = 15 * 60; // 15 minutes in seconds
+            let timerInterval;
+            
+            // Correct answers
+            const correctAnswers = {
+                1: 'C',
+                2: 'ate',
+                3: 'I saw the movie last weekend.',
+                4: 'present perfect vs simple past',
+                5: 'I studied English grammar yesterday.'
+            };
+            
+            // Initialize quiz
+            function initQuiz() {
+                startTimer();
+                updateProgress();
+                showQuestion(currentQuestion);
+            }
+            
+            // Start timer
+            function startTimer() {
+                timerInterval = setInterval(function() {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        submitQuiz();
+                    }
+                }, 1000);
+            }
+            
+            // Update timer display
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.querySelector('#timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // Update progress bar
+            function updateProgress() {
+                const progressPercent = (currentQuestion / totalQuestions) * 100;
+                document.querySelector('#progress-bar').style.width = `${progressPercent}%`;
+                document.querySelector('#progress-text').textContent = 
+                    `Question ${currentQuestion} of ${totalQuestions}`;
+                document.querySelector('#score-text').textContent = `Score: ${score}/${totalQuestions}`;
+            }
+            
+            // Show specific question
+            function showQuestion(questionNumber) {
+                // Hide all questions
+                document.querySelectorAll('.quiz-question').forEach(question => {
+                    question.classList.add('hidden');
+                });
+                
+                // Show current question
+                const currentQuestionElement = document.querySelector(`#question-${questionNumber}`);
+                if (currentQuestionElement) {
+                    currentQuestionElement.classList.remove('hidden');
+                    currentQuestionElement.classList.add('fade-in');
+                }
+                
+                // Update navigation buttons
+                updateNavigationButtons();
+            }
+            
+            // Update navigation buttons
+            function updateNavigationButtons() {
+                const previousBtn = document.querySelector('#previous-question');
+                const nextBtn = document.querySelector('#next-question');
+                const submitBtn = document.querySelector('#submit-quiz');
+                
+                previousBtn.disabled = currentQuestion === 1;
+                previousBtn.classList.toggle('opacity-50', currentQuestion === 1);
+                
+                if (currentQuestion === totalQuestions) {
+                    nextBtn.classList.add('hidden');
+                    submitBtn.classList.remove('hidden');
+                } else {
+                    nextBtn.classList.remove('hidden');
+                    submitBtn.classList.add('hidden');
+                }
+            }
+            
+            // Handle multiple choice answers
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionNumber = parseInt(this.dataset.question);
+                    const selectedValue = this.dataset.value;
+                    
+                    // Remove selection from all options
+                    document.querySelectorAll(`[data-question="${questionNumber}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selection to clicked option
+                    this.classList.add('selected');
+                    
+                    // Check answer
+                    checkMultipleChoiceAnswer(questionNumber, selectedValue);
+                });
+            });
+            
+            // Check multiple choice answer
+            function checkMultipleChoiceAnswer(questionNumber, selectedValue) {
+                userAnswers[questionNumber] = selectedValue;
+                
+                const isCorrect = selectedValue === correctAnswers[questionNumber];
+                const options = document.querySelectorAll(`[data-question="${questionNumber}"]`);
+                
+                options.forEach(option => {
+                    option.classList.remove('correct', 'incorrect');
+                    if (option.dataset.value === correctAnswers[questionNumber]) {
+                        option.classList.add('correct');
+                    } else if (option.classList.contains('selected') && !isCorrect) {
+                        option.classList.add('incorrect');
+                    }
+                });
+                
+                // Show explanation
+                const explanation = document.querySelector(`#explanation-${questionNumber}`);
+                if (explanation) {
+                    explanation.classList.remove('hidden');
+                }
+                
+                if (isCorrect && !userAnswers[`${questionNumber}_graded`]) {
+                    score++;
+                    userAnswers[`${questionNumber}_graded`] = true;
+                    updateProgress();
+                }
+            }
+            
+            // Handle fill in the blank
+            document.querySelector('#check-answer-2').addEventListener('click', function() {
+                const userAnswer = document.querySelector('#blank-answer-2').value.trim().toLowerCase();
+                const isCorrect = userAnswer === correctAnswers[2];
+                
+                showFeedback(2, isCorrect, userAnswer);
+                
+                if (isCorrect && !userAnswers['2_graded']) {
+                    score++;
+                    userAnswers['2_graded'] = true;
+                    updateProgress();
+                }
+            });
+            
+            document.querySelector('#show-answer-2').addEventListener('click', function() {
+                document.querySelector('#blank-answer-2').value = correctAnswers[2];
+                showFeedback(2, true, correctAnswers[2]);
+            });
+            
+            // Handle error correction
+            document.querySelector('#check-correction-3').addEventListener('click', function() {
+                const userAnswer = document.querySelector('#correction-3').value.trim();
+                const isCorrect = userAnswer.toLowerCase() === correctAnswers[3].toLowerCase();
+                
+                showCorrectionFeedback(3, isCorrect, userAnswer);
+                
+                if (isCorrect && !userAnswers['3_graded']) {
+                    score++;
+                    userAnswers['3_graded'] = true;
+                    updateProgress();
+                }
+            });
+            
+            document.querySelector('#show-correction-3').addEventListener('click', function() {
+                document.querySelector('#correction-3').value = correctAnswers[3];
+                showCorrectionFeedback(3, true, correctAnswers[3]);
+            });
+            
+            // Handle short answer
+            document.querySelector('#submit-answer-4').addEventListener('click', function() {
+                const userAnswer = document.querySelector('#short-answer-4').value.trim();
+                
+                // For demo purposes, we'll accept any non-empty answer
+                const isCorrect = userAnswer.length > 0;
+                
+                showShortAnswerFeedback(4, isCorrect, userAnswer);
+                
+                if (isCorrect && !userAnswers['4_graded']) {
+                    score++;
+                    userAnswers['4_graded'] = true;
+                    updateProgress();
+                }
+            });
+            
+            document.querySelector('#show-model-answer-4').addEventListener('click', function() {
+                const feedback = document.querySelector('#short-answer-feedback-4');
+                const modelAnswer = document.querySelector('#model-answer-4');
+                
+                feedback.classList.remove('hidden');
+                modelAnswer.classList.remove('hidden');
+            });
+            
+            // Handle translation
+            document.querySelector('#check-translation-5').addEventListener('click', function() {
+                const userAnswer = document.querySelector('#translation-5').value.trim();
+                const isCorrect = userAnswer.toLowerCase() === correctAnswers[5].toLowerCase();
+                
+                showTranslationFeedback(5, isCorrect, userAnswer);
+                
+                if (isCorrect && !userAnswers['5_graded']) {
+                    score++;
+                    userAnswers['5_graded'] = true;
+                    updateProgress();
+                }
+            });
+            
+            document.querySelector('#show-correct-translation-5').addEventListener('click', function() {
+                document.querySelector('#translation-5').value = correctAnswers[5];
+                showTranslationFeedback(5, true, correctAnswers[5]);
+            });
+            
+            // Show feedback for fill in the blank
+            function showFeedback(questionNumber, isCorrect, userAnswer) {
+                const feedback = document.querySelector(`#feedback-${questionNumber}`);
+                const icon = document.querySelector(`#feedback-icon-${questionNumber}`);
+                const text = document.querySelector(`#feedback-text-${questionNumber}`);
+                const explanation = document.querySelector(`#feedback-explanation-${questionNumber}`);
+                
+                feedback.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-green-50 border border-green-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-green-600 fas fa-check-circle';
+                    text.textContent = 'Correct!';
+                    text.className = 'font-medium text-green-800 mb-1';
+                    explanation.textContent = `"${correctAnswers[questionNumber]}" is the correct past tense form of "eat".`;
+                    explanation.className = 'text-green-700 text-sm';
+                } else {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-red-600 fas fa-times-circle';
+                    text.textContent = 'Not quite right.';
+                    text.className = 'font-medium text-red-800 mb-1';
+                    explanation.textContent = `The correct answer is "${correctAnswers[questionNumber]}".`;
+                    explanation.className = 'text-red-700 text-sm';
+                }
+            }
+            
+            // Show feedback for error correction
+            function showCorrectionFeedback(questionNumber, isCorrect, userAnswer) {
+                const feedback = document.querySelector(`#correction-feedback-${questionNumber}`);
+                const icon = document.querySelector(`#correction-icon-${questionNumber}`);
+                const text = document.querySelector(`#correction-text-${questionNumber}`);
+                const explanation = document.querySelector(`#correction-explanation-${questionNumber}`);
+                
+                feedback.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-green-50 border border-green-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-green-600 fas fa-check-circle';
+                    text.textContent = 'Excellent correction!';
+                    text.className = 'font-medium text-green-800 mb-1';
+                    explanation.textContent = '"Seed" is incorrect. The past tense of "see" is "saw".';
+                    explanation.className = 'text-green-700 text-sm';
+                } else {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-red-600 fas fa-times-circle';
+                    text.textContent = 'Please try again.';
+                    text.className = 'font-medium text-red-800 mb-1';
+                    explanation.textContent = `The correct correction is: "${correctAnswers[questionNumber]}"`;
+                    explanation.className = 'text-red-700 text-sm';
+                }
+            }
+            
+            // Show feedback for short answer
+            function showShortAnswerFeedback(questionNumber, isCorrect, userAnswer) {
+                const feedback = document.querySelector(`#short-answer-feedback-${questionNumber}`);
+                const icon = document.querySelector(`#short-answer-icon-${questionNumber}`);
+                const text = document.querySelector(`#short-answer-text-${questionNumber}`);
+                
+                feedback.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-green-50 border border-green-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-green-600 fas fa-check-circle';
+                    text.textContent = 'Good answer!';
+                    text.className = 'font-medium text-green-800 mb-1';
+                } else {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-orange-50 border border-orange-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-orange-600 fas fa-info-circle';
+                    text.textContent = 'Please provide an answer.';
+                    text.className = 'font-medium text-orange-800 mb-1';
+                }
+            }
+            
+            // Show feedback for translation
+            function showTranslationFeedback(questionNumber, isCorrect, userAnswer) {
+                const feedback = document.querySelector(`#translation-feedback-${questionNumber}`);
+                const icon = document.querySelector(`#translation-icon-${questionNumber}`);
+                const text = document.querySelector(`#translation-text-${questionNumber}`);
+                const correctTranslation = document.querySelector(`#correct-translation-${questionNumber}`);
+                
+                feedback.classList.remove('hidden');
+                correctTranslation.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-green-50 border border-green-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-green-600 fas fa-check-circle';
+                    text.textContent = 'Excellent translation!';
+                    text.className = 'font-medium text-green-800 mb-1';
+                } else {
+                    feedback.className = 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200';
+                    icon.className = 'mt-1 mr-3 text-lg text-red-600 fas fa-times-circle';
+                    text.textContent = 'Please check your translation.';
+                    text.className = 'font-medium text-red-800 mb-1';
+                }
+            }
+            
+            // Previous question button
+            document.querySelector('#previous-question').addEventListener('click', function() {
+                if (currentQuestion > 1) {
+                    currentQuestion--;
+                    showQuestion(currentQuestion);
+                    updateProgress();
+                }
+            });
+            
+            // Next question button
+            document.querySelector('#next-question').addEventListener('click', function() {
+                if (currentQuestion < totalQuestions) {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                    updateProgress();
+                }
+            });
+            
+            // Submit quiz
+            function submitQuiz() {
+                clearInterval(timerInterval);
+                
+                // Hide quiz content and show results
+                document.querySelector('#quiz-content').classList.add('hidden');
+                document.querySelector('#quiz-footer').classList.add('hidden');
+                
+                // Calculate final score
+                const percentage = (score / totalQuestions) * 100;
+                let grade = '';
+                
+                if (percentage >= 90) grade = 'A';
+                else if (percentage >= 80) grade = 'B';
+                else if (percentage >= 70) grade = 'C';
+                else if (percentage >= 60) grade = 'D';
+                else grade = 'F';
+                
+                // Update results display
+                document.querySelector('#final-score').textContent = `${score}/${totalQuestions}`;
+                document.querySelector('#final-percentage').textContent = `${Math.round(percentage)}%`;
+                document.querySelector('#final-grade').textContent = grade;
+                
+                // Show results
+                document.querySelector('#quiz-results').classList.remove('hidden');
+            }
+            
+            // Submit quiz button
+            document.querySelector('#submit-quiz').addEventListener('click', submitQuiz);
+            
+            // Review answers button
+            document.querySelector('#review-answers').addEventListener('click', function() {
+                // Show all questions with answers
+                document.querySelector('#quiz-results').classList.add('hidden');
+                document.querySelector('#quiz-content').classList.remove('hidden');
+                
+                // Show all questions
+                document.querySelectorAll('.quiz-question').forEach(question => {
+                    question.classList.remove('hidden');
+                });
+                
+                // Show all explanations
+                document.querySelectorAll('[id^="explanation-"], [id^="feedback-"], [id^="correction-feedback-"], [id^="short-answer-feedback-"], [id^="translation-feedback-"]').forEach(element => {
+                    element.classList.remove('hidden');
+                });
+            });
+            
+            // Close quiz button
+            document.querySelector('#close-quiz').addEventListener('click', function() {
+                // Return to tutoring page with quiz results
+                const quizResult = {
+                    score: score,
+                    total: totalQuestions,
+                    percentage: (score / totalQuestions) * 100,
+                    completedAt: new Date().toISOString()
+                };
+                
+                // Store result in sessionStorage for tutoring page to access
+                sessionStorage.setItem('quizResult', JSON.stringify(quizResult));
+                
+                // Navigate back to tutoring page
+                window.location.href = 'P-TUTOR_CHAT.html';
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    document.querySelector('#previous-question').click();
+                } else if (e.key === 'ArrowRight') {
+                    if (currentQuestion < totalQuestions) {
+                        document.querySelector('#next-question').click();
+                    } else {
+                        document.querySelector('#submit-quiz').click();
+                    }
+                }
+            });
+            
+            // Initialize the quiz
+            initQuiz();
+        });
+    </script>
+</body>
+</html>

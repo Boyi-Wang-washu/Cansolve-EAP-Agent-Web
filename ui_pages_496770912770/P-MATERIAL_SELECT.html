@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Reading Material - BNBU EAP English Teaching Assistant</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1B8C79',
+                        secondary: '#37436A', 
+                        accent: '#080D1E',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                        'bg-light': '#F9FAFB',
+                        'border-light': '#E5E7EB'
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-transition {
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .nav-item-active {
+            background-color: rgba(27, 140, 121, 0.1);
+            border-right: 3px solid #1B8C79;
+            color: #1B8C79;
+        }
+        
+        .material-card-selected {
+            border: 2px solid #1B8C79;
+            background-color: rgba(27, 140, 121, 0.05);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-bg-light min-h-screen">
+    <!-- Top Navigation Bar -->
+    <header id="top-nav" class="fixed top-0 left-0 right-0 bg-white border-b border-border-light h-16 z-50">
+        <div class="flex items-center justify-between h-full px-6">
+            <!-- Logo and Brand -->
+            <div id="brand-section" class="flex items-center space-x-4">
+                <div id="logo" class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 id="brand-title" class="text-xl font-bold text-text-primary">BNBU EAP</h1>
+                    <p id="brand-subtitle" class="text-xs text-text-secondary">English Teaching Assistant</p>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div id="search-section" class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="global-search" 
+                        placeholder="Search materials, sessions..." 
+                        class="w-full pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                </div>
+            </div>
+            
+            <!-- User Actions -->
+            <div id="user-actions" class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <button id="notifications-btn" class="relative p-2 text-text-secondary hover:text-primary transition-colors">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                </button>
+                
+                <!-- User Profile -->
+                <div id="user-profile" class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <img 
+                            src="https://s.coze.cn/image/WEbcNe3oh-A/" 
+                            alt="User Avatar" 
+                            class="w-8 h-8 rounded-full"
+                            data-category="人物"
+                        >
+                        <span class="text-sm font-medium text-text-primary">John Doe</span>
+                        <i class="fas fa-chevron-down text-xs text-text-secondary"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-border-light sidebar-transition z-40">
+        <nav id="sidebar-nav" class="p-4 space-y-2">
+            <!-- Dashboard -->
+            <a href="P-ENTRY.html" id="nav-dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <!-- 1v1 Tutoring -->
+            <a href="#" id="nav-tutoring" class="nav-item-active flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-comments w-5"></i>
+                <span>1v1 Tutoring</span>
+            </a>
+            
+            <!-- Group Discussion -->
+            <a href="#" id="nav-group" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-users w-5"></i>
+                <span>Group Discussion</span>
+                <span class="ml-auto px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded-full">Coming Soon</span>
+            </a>
+            
+            <!-- Video Feedback -->
+            <a href="#" id="nav-video" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-video w-5"></i>
+                <span>Video Feedback</span>
+                <span class="ml-auto px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded-full">Coming Soon</span>
+            </a>
+            
+            <!-- Learning Reports -->
+            <a href="P-REPORT.html" id="nav-reports" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-chart-line w-5"></i>
+                <span>Learning Reports</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="ml-64 mt-16 p-8 min-h-screen">
+        <!-- Page Header -->
+        <div id="page-header" class="mb-8">
+            <nav id="breadcrumb" class="text-sm text-text-secondary mb-2">
+                <a href="P-ENTRY.html" class="hover:text-primary transition-colors">Home</a>
+                <span class="mx-2">/</span>
+                <span>1v1 Tutoring</span>
+                <span class="mx-2">/</span>
+                <span class="text-text-primary">Select Material</span>
+            </nav>
+            <h1 id="page-title" class="text-3xl font-bold text-text-primary mb-2">Select Reading Material</h1>
+            <p id="page-subtitle" class="text-text-secondary">Choose a material to start your tutoring session</p>
+        </div>
+
+        <!-- Material Code Input Section -->
+        <section id="material-code-input" class="bg-white rounded-xl shadow-card p-6 mb-8">
+            <h2 class="text-xl font-semibold text-text-primary mb-4">Enter Material Code</h2>
+            <div class="flex space-x-4 max-w-md">
+                <div class="flex-1">
+                    <label for="material-code" class="block text-sm font-medium text-text-primary mb-2">Material Index Code</label>
+                    <input 
+                        type="text" 
+                        id="material-code" 
+                        placeholder="e.g., ENG-2025-U3-A" 
+                        class="w-full px-4 py-3 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                </div>
+                <div class="flex items-end">
+                    <button 
+                        id="confirm-code-btn" 
+                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+            <p class="text-sm text-text-secondary mt-3">
+                Enter the material code provided by your teacher, or select from the popular materials below.
+            </p>
+        </section>
+
+        <!-- Popular Materials Section -->
+        <section id="popular-materials" class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-text-primary">Popular Materials</h2>
+                <div class="flex items-center space-x-4">
+                    <select id="filter-category" class="text-sm border border-border-light rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option>All Categories</option>
+                        <option>Academic Writing</option>
+                        <option>Business English</option>
+                        <option>General Reading</option>
+                        <option>Research Papers</option>
+                    </select>
+                    <select id="filter-level" class="text-sm border border-border-light rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option>All Levels</option>
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Materials Grid -->
+            <div id="materials-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Material Card 1 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat001"
+                    data-material-code="ENG-2025-U3-A"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-alt text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Academic Writing Fundamentals</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        Introduction to academic writing conventions, including essay structure, citation formats, and academic tone.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>Academic Writing</span>
+                        <span><i class="fas fa-clock mr-1"></i>25 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Intermediate</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U3-A</span>
+                    </div>
+                </div>
+
+                <!-- Material Card 2 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat002"
+                    data-material-code="ENG-2025-U4-B"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-secondary bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-briefcase text-secondary text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Business Communication Skills</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        Effective business communication strategies, email writing, and professional correspondence techniques.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>Business English</span>
+                        <span><i class="fas fa-clock mr-1"></i>30 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Advanced</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U4-B</span>
+                    </div>
+                </div>
+
+                <!-- Material Card 3 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat003"
+                    data-material-code="ENG-2025-U2-C"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-accent bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-newspaper text-accent text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Global Environmental Issues</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        Analysis of current environmental challenges and sustainable development initiatives worldwide.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>General Reading</span>
+                        <span><i class="fas fa-clock mr-1"></i>20 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Intermediate</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U2-C</span>
+                    </div>
+                </div>
+
+                <!-- Material Card 4 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat004"
+                    data-material-code="ENG-2025-U1-D"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-yellow-500 bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-flask text-yellow-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Scientific Research Methods</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        Overview of scientific inquiry, research design, and methodology in academic studies.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>Research Papers</span>
+                        <span><i class="fas fa-clock mr-1"></i>35 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Advanced</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U1-D</span>
+                    </div>
+                </div>
+
+                <!-- Material Card 5 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat005"
+                    data-material-code="ENG-2025-U5-E"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-red-500 bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-heart text-red-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Cultural Studies and Identity</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        Exploration of cultural diversity, social identity, and cross-cultural communication.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>General Reading</span>
+                        <span><i class="fas fa-clock mr-1"></i>28 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Intermediate</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U5-E</span>
+                    </div>
+                </div>
+
+                <!-- Material Card 6 -->
+                <div 
+                    class="material-card bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" 
+                    data-material-id="mat006"
+                    data-material-code="ENG-2025-U6-F"
+                >
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-indigo-500 bg-opacity-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-laptop text-indigo-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-primary mb-2">Digital Literacy in Education</h3>
+                    <p class="text-sm text-text-secondary mb-4">
+                        The role of technology in modern education and developing digital literacy skills.
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-text-secondary mb-4">
+                        <span><i class="fas fa-tag mr-1"></i>Academic Writing</span>
+                        <span><i class="fas fa-clock mr-1"></i>22 min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Beginner</span>
+                        <span class="text-xs font-mono text-text-secondary">ENG-2025-U6-F</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selected Material Confirmation -->
+        <div id="selected-material-section" class="hidden bg-white rounded-xl shadow-card p-6 fade-in">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 id="selected-material-title" class="text-lg font-semibold text-text-primary">Material Selected</h3>
+                        <p id="selected-material-code" class="text-sm text-text-secondary">ENG-2025-U3-A</p>
+                    </div>
+                </div>
+                <button 
+                    id="start-conversation-btn" 
+                    class="px-8 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                >
+                    Start Conversation
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedMaterialId = null;
+            let selectedMaterialCode = null;
+
+            // Navigation events
+            document.querySelector('#nav-dashboard').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-ENTRY.html';
+            });
+
+            document.querySelector('#nav-tutoring').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Already on tutoring page
+            });
+
+            document.querySelector('#nav-reports').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-REPORT.html';
+            });
+
+            // Material code input confirmation
+            document.querySelector('#confirm-code-btn').addEventListener('click', function() {
+                const codeInput = document.querySelector('#material-code');
+                const code = codeInput.value.trim();
+                
+                if (code) {
+                    // Validate code format (simplified check)
+                    if (code.match(/^[A-Z]{3}-\d{4}-[A-Z]\d-[A-Z]$/)) {
+                        selectedMaterialCode = code;
+                        selectedMaterialId = 'custom-' + code;
+                        
+                        // Update selected material section
+                        document.querySelector('#selected-material-title').textContent = 'Custom Material';
+                        document.querySelector('#selected-material-code').textContent = code;
+                        document.querySelector('#selected-material-section').classList.remove('hidden');
+                        
+                        // Clear material selection
+                        document.querySelectorAll('.material-card').forEach(card => {
+                            card.classList.remove('material-card-selected');
+                        });
+                        
+                        // Scroll to confirmation section
+                        document.querySelector('#selected-material-section').scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        alert('Please enter a valid material code (format: XXX-YYYY-XZ-X)');
+                    }
+                } else {
+                    alert('Please enter a material code');
+                }
+            });
+
+            // Material card selection
+            document.querySelectorAll('.material-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selection from all cards
+                    document.querySelectorAll('.material-card').forEach(c => {
+                        c.classList.remove('material-card-selected');
+                    });
+                    
+                    // Add selection to clicked card
+                    this.classList.add('material-card-selected');
+                    
+                    // Store selected material info
+                    selectedMaterialId = this.dataset.materialId;
+                    selectedMaterialCode = this.dataset.materialCode;
+                    
+                    // Update selected material section
+                    const title = this.querySelector('h3').textContent;
+                    document.querySelector('#selected-material-title').textContent = title;
+                    document.querySelector('#selected-material-code').textContent = selectedMaterialCode;
+                    document.querySelector('#selected-material-section').classList.remove('hidden');
+                    
+                    // Clear code input
+                    document.querySelector('#material-code').value = '';
+                    
+                    // Scroll to confirmation section
+                    document.querySelector('#selected-material-section').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // Start conversation button
+            document.querySelector('#start-conversation-btn').addEventListener('click', function() {
+                if (selectedMaterialId && selectedMaterialCode) {
+                    // Navigate to tutoring chat page with material parameters
+                    window.location.href = `P-TUTOR_CHAT.html?materialId=${selectedMaterialId}&materialCode=${selectedMaterialCode}`;
+                } else {
+                    alert('Please select a material first');
+                }
+            });
+
+            // Filter functionality
+            document.querySelector('#filter-category').addEventListener('change', function() {
+                filterMaterials();
+            });
+
+            document.querySelector('#filter-level').addEventListener('change', function() {
+                filterMaterials();
+            });
+
+            function filterMaterials() {
+                const categoryFilter = document.querySelector('#filter-category').value;
+                const levelFilter = document.querySelector('#filter-level').value;
+                const materialCards = document.querySelectorAll('.material-card');
+
+                materialCards.forEach(card => {
+                    let showCard = true;
+
+                    // Filter by category
+                    if (categoryFilter !== 'All Categories') {
+                        const cardCategory = card.querySelector('.fa-tag').nextSibling.textContent.trim();
+                        if (cardCategory !== categoryFilter) {
+                            showCard = false;
+                        }
+                    }
+
+                    // Filter by level
+                    if (levelFilter !== 'All Levels' && showCard) {
+                        const levelBadge = card.querySelector('.bg-blue-100, .bg-purple-100, .bg-green-100');
+                        if (levelBadge) {
+                            const cardLevel = levelBadge.textContent.trim();
+                            if (cardLevel !== levelFilter) {
+                                showCard = false;
+                            }
+                        }
+                    }
+
+                    // Show or hide card
+                    if (showCard) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Enter key to confirm code
+                if (e.key === 'Enter' && document.activeElement === document.querySelector('#material-code')) {
+                    document.querySelector('#confirm-code-btn').click();
+                }
+                
+                // Escape key to clear selection
+                if (e.key === 'Escape') {
+                    selectedMaterialId = null;
+                    selectedMaterialCode = null;
+                    document.querySelector('#selected-material-section').classList.add('hidden');
+                    document.querySelector('#material-code').value = '';
+                    document.querySelectorAll('.material-card').forEach(card => {
+                        card.classList.remove('material-card-selected');
+                    });
+                }
+            });
+
+            // Global search functionality
+            document.querySelector('#global-search').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const materialCards = document.querySelectorAll('.material-card');
+
+                if (searchTerm) {
+                    materialCards.forEach(card => {
+                        const title = card.querySelector('h3').textContent.toLowerCase();
+                        const description = card.querySelector('p').textContent.toLowerCase();
+                        const code = card.dataset.materialCode.toLowerCase();
+                        
+                        if (title.includes(searchTerm) || description.includes(searchTerm) || code.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                } else {
+                    // Reset filters
+                    materialCards.forEach(card => {
+                        card.style.display = 'block';
+                    });
+                    filterMaterials(); // Re-apply current filters
+                }
+            });
+        });
+    </script>
+</body>
+</html>

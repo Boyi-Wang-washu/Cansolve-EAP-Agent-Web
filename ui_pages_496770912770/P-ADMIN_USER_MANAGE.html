@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - BNBU EAP English Teaching Assistant</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1B8C79',
+                        secondary: '#37436A', 
+                        accent: '#080D1E',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                        'bg-light': '#F9FAFB',
+                        'border-light': '#E5E7EB'
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-transition {
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .nav-item-active {
+            background-color: rgba(27, 140, 121, 0.1);
+            border-right: 3px solid #1B8C79;
+            color: #1B8C79;
+        }
+        
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-enter {
+            animation: modalEnter 0.3s ease-out;
+        }
+        
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .table-row:hover {
+            background-color: #F9FAFB;
+        }
+        
+        .btn-primary {
+            background-color: #1B8C79;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        .btn-primary:hover {
+            background-color: #156B5A;
+        }
+        
+        .btn-secondary {
+            background-color: #F3F4F6;
+            color: #374151;
+            border: 1px solid #D1D5DB;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #E5E7EB;
+        }
+        
+        .btn-danger {
+            background-color: #EF4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        .btn-danger:hover {
+            background-color: #DC2626;
+        }
+        
+        .form-input {
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            width: 100%;
+            transition: border-color 0.2s ease-in-out;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1B8C79;
+            box-shadow: 0 0 0 2px rgba(27, 140, 121, 0.2);
+        }
+        
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .role-student {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .role-teacher {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .role-admin {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+    </style>
+</head>
+<body class="bg-bg-light min-h-screen">
+    <!-- Top Navigation Bar -->
+    <header id="top-nav" class="fixed top-0 left-0 right-0 bg-white border-b border-border-light h-16 z-50">
+        <div class="flex items-center justify-between h-full px-6">
+            <!-- Logo and Brand -->
+            <div id="brand-section" class="flex items-center space-x-4">
+                <div id="logo" class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 id="brand-title" class="text-xl font-bold text-text-primary">BNBU EAP</h1>
+                    <p id="brand-subtitle" class="text-xs text-text-secondary">English Teaching Assistant</p>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div id="search-section" class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="global-search" 
+                        placeholder="Search materials, sessions..." 
+                        class="w-full pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                </div>
+            </div>
+            
+            <!-- User Actions -->
+            <div id="user-actions" class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <button id="notifications-btn" class="relative p-2 text-text-secondary hover:text-primary transition-colors">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                </button>
+                
+                <!-- User Profile -->
+                <div id="user-profile" class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <img 
+                            src="https://s.coze.cn/image/Jmf8PrjBSEo/" 
+                            alt="Admin Avatar" 
+                            class="w-8 h-8 rounded-full"
+                            data-category="人物"
+                        >
+                        <span class="text-sm font-medium text-text-primary">Admin User</span>
+                        <i class="fas fa-chevron-down text-xs text-text-secondary"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-border-light sidebar-transition z-40">
+        <nav id="sidebar-nav" class="p-4 space-y-2">
+            <!-- Dashboard -->
+            <a href="P-ENTRY.html" id="nav-dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <!-- Admin Section -->
+            <div id="admin-section" class="mt-8 pt-4 border-t border-border-light">
+                <h3 class="px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Admin Tools</h3>
+                <a href="P-ADMIN_USER_MANAGE.html" id="nav-users" class="nav-item-active flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors">
+                    <i class="fas fa-users-cog w-5"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="P-ADMIN_SYSTEM_CONFIG.html" id="nav-config" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-cog w-5"></i>
+                    <span>System Configuration</span>
+                </a>
+                <a href="P-ADMIN_DATA_AUDIT.html" id="nav-audit" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-file-alt w-5"></i>
+                    <span>Data Audit</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="ml-64 mt-16 p-8 min-h-screen">
+        <!-- Page Header -->
+        <div id="page-header" class="mb-8">
+            <nav id="breadcrumb" class="text-sm text-text-secondary mb-2">
+                <span>Home</span>
+                <span class="mx-2">/</span>
+                <span>Admin Tools</span>
+                <span class="mx-2">/</span>
+                <span class="text-primary">User Management</span>
+            </nav>
+            <h1 id="page-title" class="text-3xl font-bold text-text-primary mb-2">User Management</h1>
+            <p id="page-subtitle" class="text-text-secondary">Manage user accounts, roles, and permissions</p>
+        </div>
+
+        <!-- Toolbar -->
+        <div id="toolbar" class="bg-white rounded-xl shadow-card p-6 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="user-search" 
+                            placeholder="Search users..." 
+                            class="w-full sm:w-64 pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        >
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                    </div>
+                    
+                    <!-- Role Filter -->
+                    <select id="role-filter" class="px-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">All Roles</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    
+                    <!-- Class Filter -->
+                    <select id="class-filter" class="px-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">All Classes</option>
+                        <option value="Class A">Class A</option>
+                        <option value="Class B">Class B</option>
+                        <option value="Class C">Class C</option>
+                    </select>
+                </div>
+                
+                <!-- Add User Button -->
+                <button id="add-user-btn" class="btn-primary flex items-center space-x-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New User</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div id="users-table-container" class="bg-white rounded-xl shadow-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="users-table" class="w-full">
+                    <thead class="bg-gray-50 border-b border-border-light">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                <button class="flex items-center space-x-1 hover:text-primary" data-sort="id">
+                                    <span>User ID</span>
+                                    <i class="fas fa-sort text-xs"></i>
+                                </button>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                <button class="flex items-center space-x-1 hover:text-primary" data-sort="name">
+                                    <span>Name</span>
+                                    <i class="fas fa-sort text-xs"></i>
+                                </button>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                <button class="flex items-center space-x-1 hover:text-primary" data-sort="role">
+                                    <span>Role</span>
+                                    <i class="fas fa-sort text-xs"></i>
+                                </button>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                <button class="flex items-center space-x-1 hover:text-primary" data-sort="class">
+                                    <span>Class</span>
+                                    <i class="fas fa-sort text-xs"></i>
+                                </button>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                <button class="flex items-center space-x-1 hover:text-primary" data-sort="created">
+                                    <span>Created At</span>
+                                    <i class="fas fa-sort text-xs"></i>
+                                </button>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body" class="bg-white divide-y divide-border-light">
+                        <!-- User rows will be dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div id="pagination" class="px-6 py-4 border-t border-border-light flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                    <span>Showing</span>
+                    <select id="page-size" class="border border-border-light rounded px-2 py-1">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>of <span id="total-users">0</span> users</span>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button id="prev-page" class="px-3 py-1 border border-border-light rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div id="page-numbers" class="flex space-x-1">
+                        <!-- Page numbers will be dynamically generated -->
+                    </div>
+                    <button id="next-page" class="px-3 py-1 border border-border-light rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit User Modal -->
+    <div id="user-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div id="user-modal-content" class="bg-white rounded-xl shadow-xl w-full max-w-md modal-enter">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 id="modal-title" class="text-lg font-semibold text-text-primary">Add New User</h3>
+                        <button id="close-modal" class="text-text-secondary hover:text-text-primary">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="user-form" class="space-y-4">
+                        <div>
+                            <label for="user-name" class="block text-sm font-medium text-text-primary mb-2">Full Name</label>
+                            <input type="text" id="user-name" name="name" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="user-email" class="block text-sm font-medium text-text-primary mb-2">Email</label>
+                            <input type="email" id="user-email" name="email" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="user-role" class="block text-sm font-medium text-text-primary mb-2">Role</label>
+                            <select id="user-role" name="role" class="form-input" required>
+                                <option value="">Select Role</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div id="class-field">
+                            <label for="user-class" class="block text-sm font-medium text-text-primary mb-2">Class</label>
+                            <select id="user-class" name="class" class="form-input">
+                                <option value="">Select Class</option>
+                                <option value="Class A">Class A</option>
+                                <option value="Class B">Class B</option>
+                                <option value="Class C">Class C</option>
+                            </select>
+                        </div>
+                        
+                        <div id="password-field">
+                            <label for="user-password" class="block text-sm font-medium text-text-primary mb-2">Password</label>
+                            <input type="password" id="user-password" name="password" class="form-input" placeholder="Leave blank to auto-generate">
+                        </div>
+                        
+                        <div class="flex space-x-3 pt-4">
+                            <button type="button" id="cancel-btn" class="flex-1 btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" id="save-btn" class="flex-1 btn-primary">
+                                Save User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-sm modal-enter">
+                <div class="p-6">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-text-primary mb-2">Confirm Action</h3>
+                        <p id="confirm-message" class="text-text-secondary mb-6">Are you sure you want to perform this action?</p>
+                        
+                        <div class="flex space-x-3">
+                            <button id="confirm-cancel" class="flex-1 btn-secondary">
+                                Cancel
+                            </button>
+                            <button id="confirm-ok" class="flex-1 btn-danger">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock user data
+        let users = [
+            {
+                id: 'USR001',
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+                role: 'student',
+                class: 'Class A',
+                created: '2024-01-15 10:30:00'
+            },
+            {
+                id: 'USR002',
+                name: 'Jane Smith',
+                email: 'jane.smith@example.com',
+                role: 'teacher',
+                class: '',
+                created: '2024-01-10 09:15:00'
+            },
+            {
+                id: 'USR003',
+                name: 'Robert Johnson',
+                email: 'robert.johnson@example.com',
+                role: 'student',
+                class: 'Class B',
+                created: '2024-01-20 14:20:00'
+            },
+            {
+                id: 'USR004',
+                name: 'Emily Davis',
+                email: 'emily.davis@example.com',
+                role: 'student',
+                class: 'Class A',
+                created: '2024-01-18 11:45:00'
+            },
+            {
+                id: 'USR005',
+                name: 'Michael Brown',
+                email: 'michael.brown@example.com',
+                role: 'admin',
+                class: '',
+                created: '2024-01-05 08:00:00'
+            },
+            {
+                id: 'USR006',
+                name: 'Sarah Wilson',
+                email: 'sarah.wilson@example.com',
+                role: 'student',
+                class: 'Class C',
+                created: '2024-01-22 16:10:00'
+            },
+            {
+                id: 'USR007',
+                name: 'David Taylor',
+                email: 'david.taylor@example.com',
+                role: 'teacher',
+                class: '',
+                created: '2024-01-08 13:30:00'
+            },
+            {
+                id: 'USR008',
+                name: 'Lisa Anderson',
+                email: 'lisa.anderson@example.com',
+                role: 'student',
+                class: 'Class B',
+                created: '2024-01-16 12:00:00'
+            }
+        ];
+
+        let currentPage = 1;
+        let pageSize = 10;
+        let sortField = 'id';
+        let sortOrder = 'asc';
+        let filteredUsers = [...users];
+        let editingUserId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            setupEventListeners();
+            renderUsersTable();
+        });
+
+        function initializePage() {
+            // Set initial state
+            updateTotalUsers();
+            updatePagination();
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.querySelector('#user-search').addEventListener('input', handleSearch);
+            
+            // Filter functionality
+            document.querySelector('#role-filter').addEventListener('change', handleFilter);
+            document.querySelector('#class-filter').addEventListener('change', handleFilter);
+            
+            // Add user button
+            document.querySelector('#add-user-btn').addEventListener('click', () => openUserModal());
+            
+            // Modal events
+            document.querySelector('#close-modal').addEventListener('click', closeUserModal);
+            document.querySelector('#cancel-btn').addEventListener('click', closeUserModal);
+            document.querySelector('#user-form').addEventListener('submit', handleFormSubmit);
+            
+            // Confirmation modal events
+            document.querySelector('#confirm-cancel').addEventListener('click', closeConfirmModal);
+            document.querySelector('#confirm-ok').addEventListener('click', handleConfirmAction);
+            
+            // Pagination events
+            document.querySelector('#page-size').addEventListener('change', handlePageSizeChange);
+            document.querySelector('#prev-page').addEventListener('click', () => changePage(currentPage - 1));
+            document.querySelector('#next-page').addEventListener('click', () => changePage(currentPage + 1));
+            
+            // Sorting events
+            document.querySelectorAll('[data-sort]').forEach(header => {
+                header.addEventListener('click', () => handleSort(header.dataset.sort));
+            });
+            
+            // Modal overlay click to close
+            document.querySelector('#user-modal .modal-overlay').addEventListener('click', closeUserModal);
+            document.querySelector('#confirm-modal .modal-overlay').addEventListener('click', closeConfirmModal);
+            
+            // Role selection hides/shows class field
+            document.querySelector('#user-role').addEventListener('change', function() {
+                const classField = document.querySelector('#class-field');
+                if (this.value === 'student') {
+                    classField.style.display = 'block';
+                } else {
+                    classField.style.display = 'none';
+                    document.querySelector('#user-class').value = '';
+                }
+            });
+        }
+
+        function renderUsersTable() {
+            const tbody = document.querySelector('#users-table-body');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+            
+            tbody.innerHTML = '';
+            
+            pageUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">${user.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img src="https://s.coze.cn/image/kDhdvZCYwnc/" alt="${user.name}" class="w-8 h-8 rounded-full mr-3" data-category="人物">
+                            <div>
+                                <div class="text-sm font-medium text-text-primary">${user.name}</div>
+                                <div class="text-sm text-text-secondary">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="role-badge role-${user.role}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">${user.class || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">${formatDate(user.created)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button onclick="editUser('${user.id}')" class="text-primary hover:text-secondary">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="resetPassword('${user.id}')" class="text-secondary hover:text-primary">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        <button onclick="deleteUser('${user.id}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            updatePagination();
+        }
+
+        function handleSearch() {
+            const searchTerm = document.querySelector('#user-search').value.toLowerCase();
+            applyFilters(searchTerm);
+        }
+
+        function handleFilter() {
+            const searchTerm = document.querySelector('#user-search').value.toLowerCase();
+            applyFilters(searchTerm);
+        }
+
+        function applyFilters(searchTerm) {
+            const roleFilter = document.querySelector('#role-filter').value;
+            const classFilter = document.querySelector('#class-filter').value;
+            
+            filteredUsers = users.filter(user => {
+                const matchesSearch = !searchTerm || 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm) ||
+                    user.id.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                
+                const matchesClass = !classFilter || user.class === classFilter;
+                
+                return matchesSearch && matchesRole && matchesClass;
+            });
+            
+            currentPage = 1;
+            renderUsersTable();
+            updateTotalUsers();
+        }
+
+        function handleSort(field) {
+            if (sortField === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortField = field;
+                sortOrder = 'asc';
+            }
+            
+            filteredUsers.sort((a, b) => {
+                let aValue = a[field];
+                let bValue = b[field];
+                
+                if (field === 'created') {
+                    aValue = new Date(aValue);
+                    bValue = new Date(bValue);
+                } else if (typeof aValue === 'string') {
+                    aValue = aValue.toLowerCase();
+                    bValue = bValue.toLowerCase();
+                }
+                
+                if (sortOrder === 'asc') {
+                    return aValue > bValue ? 1 : -1;
+                } else {
+                    return aValue < bValue ? 1 : -1;
+                }
+            });
+            
+            renderUsersTable();
+            updateSortIcons();
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('[data-sort] i').forEach(icon => {
+                icon.className = 'fas fa-sort text-xs';
+            });
+            
+            const activeSort = document.querySelector(`[data-sort="${sortField}"] i`);
+            if (activeSort) {
+                activeSort.className = `fas fa-sort-${sortOrder === 'asc' ? 'up' : 'down'} text-xs`;
+            }
+        }
+
+        function openUserModal(userId = null) {
+            editingUserId = userId;
+            const modal = document.querySelector('#user-modal');
+            const title = document.querySelector('#modal-title');
+            const form = document.querySelector('#user-form');
+            const passwordField = document.querySelector('#password-field');
+            
+            // Reset form
+            form.reset();
+            
+            if (userId) {
+                // Edit mode
+                title.textContent = 'Edit User';
+                passwordField.style.display = 'none';
+                
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    document.querySelector('#user-name').value = user.name;
+                    document.querySelector('#user-email').value = user.email;
+                    document.querySelector('#user-role').value = user.role;
+                    document.querySelector('#user-class').value = user.class;
+                    
+                    // Show/hide class field based on role
+                    const classField = document.querySelector('#class-field');
+                    if (user.role === 'student') {
+                        classField.style.display = 'block';
+                    } else {
+                        classField.style.display = 'none';
+                    }
+                }
+            } else {
+                // Add mode
+                title.textContent = 'Add New User';
+                passwordField.style.display = 'block';
+                document.querySelector('#class-field').style.display = 'none';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.querySelector('#user-modal').classList.add('hidden');
+            editingUserId = null;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                role: formData.get('role'),
+                class: formData.get('class'),
+                password: formData.get('password')
+            };
+            
+            if (editingUserId) {
+                // Update existing user
+                const userIndex = users.findIndex(u => u.id === editingUserId);
+                if (userIndex !== -1) {
+                    users[userIndex] = {
+                        ...users[userIndex],
+                        ...userData
+                    };
+                }
+            } else {
+                // Add new user
+                const newId = 'USR' + String(users.length + 1).padStart(3, '0');
+                users.push({
+                    id: newId,
+                    ...userData,
+                    created: new Date().toISOString().slice(0, 19).replace('T', ' ')
+                });
+            }
+            
+            applyFilters(document.querySelector('#user-search').value.toLowerCase());
+            closeUserModal();
+        }
+
+        function resetPassword(userId) {
+            showConfirmModal(
+                'Reset Password',
+                'Are you sure you want to reset this user\'s password?',
+                () => {
+                    console.log('Password reset for user:', userId);
+                    // In a real application, this would send a password reset email
+                }
+            );
+        }
+
+        function deleteUser(userId) {
+            showConfirmModal(
+                'Delete User',
+                'Are you sure you want to delete this user? This action cannot be undone.',
+                () => {
+                    users = users.filter(user => user.id !== userId);
+                    applyFilters(document.querySelector('#user-search').value.toLowerCase());
+                }
+            );
+        }
+
+        function showConfirmModal(title, message, onConfirm) {
+            document.querySelector('#confirm-modal h3').textContent = title;
+            document.querySelector('#confirm-message').textContent = message;
+            document.querySelector('#confirm-modal').classList.remove('hidden');
+            
+            // Store the confirm action
+            window.confirmAction = onConfirm;
+        }
+
+        function closeConfirmModal() {
+            document.querySelector('#confirm-modal').classList.add('hidden');
+            window.confirmAction = null;
+        }
+
+        function handleConfirmAction() {
+            if (window.confirmAction) {
+                window.confirmAction();
+            }
+            closeConfirmModal();
+        }
+
+        function handlePageSizeChange() {
+            pageSize = parseInt(document.querySelector('#page-size').value);
+            currentPage = 1;
+            renderUsersTable();
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredUsers.length / pageSize);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderUsersTable();
+            }
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredUsers.length / pageSize);
+            const prevBtn = document.querySelector('#prev-page');
+            const nextBtn = document.querySelector('#next-page');
+            const pageNumbers = document.querySelector('#page-numbers');
+            
+            // Update prev/next buttons
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Generate page numbers
+            pageNumbers.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const button = document.createElement('button');
+                    button.textContent = i;
+                    button.className = `px-3 py-1 border rounded ${i === currentPage ? 'bg-primary text-white border-primary' : 'border-border-light hover:bg-gray-50'}`;
+                    button.addEventListener('click', () => changePage(i));
+                    pageNumbers.appendChild(button);
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.className = 'px-2 py-1 text-text-secondary';
+                    pageNumbers.appendChild(ellipsis);
+                }
+            }
+        }
+
+        function updateTotalUsers() {
+            document.querySelector('#total-users').textContent = filteredUsers.length;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Edit user function exposed globally for inline event handlers
+        window.editUser = function(userId) {
+            openUserModal(userId);
+        };
+
+        // Reset password function exposed globally
+        window.resetPassword = function(userId) {
+            resetPassword(userId);
+        };
+
+        // Delete user function exposed globally
+        window.deleteUser = function(userId) {
+            deleteUser(userId);
+        };
+    </script>
+</body>
+</html>

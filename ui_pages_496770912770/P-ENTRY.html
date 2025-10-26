@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNBU EAP English Teaching Assistant - Dashboard</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1B8C79',
+                        secondary: '#37436A', 
+                        accent: '#080D1E',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                        'bg-light': '#F9FAFB',
+                        'border-light': '#E5E7EB'
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-transition {
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .nav-item-active {
+            background-color: rgba(27, 140, 121, 0.1);
+            border-right: 3px solid #1B8C79;
+            color: #1B8C79;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #1B8C79 0%, #37436A 100%);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 1000;
+            min-width: 160px;
+            background-color: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .sidebar-collapsed {
+            width: 56px;
+        }
+
+        .sidebar-expanded {
+            width: 240px;
+        }
+    </style>
+</head>
+<body class="bg-bg-light min-h-screen">
+    <!-- Top Navigation Bar -->
+    <header id="top-nav" class="fixed top-0 left-0 right-0 bg-white border-b border-border-light h-16 z-50">
+        <div class="flex items-center justify-between h-full px-6">
+            <!-- Logo and Brand -->
+            <div id="brand-section" class="flex items-center space-x-4">
+                <button id="sidebar-toggle" class="p-2 text-text-secondary hover:text-primary transition-colors lg:hidden">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+                <div id="logo" class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 id="brand-title" class="text-xl font-bold text-text-primary">BNBU EAP</h1>
+                    <p id="brand-subtitle" class="text-xs text-text-secondary">English Teaching Assistant</p>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div id="search-section" class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="global-search" 
+                        placeholder="Search materials, sessions..." 
+                        class="w-full pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                </div>
+            </div>
+            
+            <!-- User Actions -->
+            <div id="user-actions" class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <button id="notifications-btn" class="relative p-2 text-text-secondary hover:text-primary transition-colors">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                </button>
+                
+                <!-- User Profile -->
+                <div id="user-profile" class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <img 
+                            src="https://s.coze.cn/image/hBnlB4CvAaw/" 
+                            alt="User Avatar" 
+                            class="w-8 h-8 rounded-full"
+                            data-category="人物"
+                        >
+                        <span class="text-sm font-medium text-text-primary">John Doe</span>
+                        <i class="fas fa-chevron-down text-xs text-text-secondary"></i>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="user-dropdown" class="dropdown-menu">
+                        <div class="py-1">
+                            <a href="#" id="user-settings" class="block px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <a href="P-AUTH.html" id="user-logout" class="block px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 bottom-0 bg-white border-r border-border-light sidebar-transition z-40 sidebar-expanded">
+        <nav id="sidebar-nav" class="p-4 space-y-2">
+            <!-- Dashboard -->
+            <a href="#" id="nav-dashboard" class="nav-item-active flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-home w-5"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            
+            <!-- 1v1 Tutoring -->
+            <a href="P-MATERIAL_SELECT.html" id="nav-tutoring" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-comments w-5"></i>
+                <span class="sidebar-text">1v1 Tutoring</span>
+            </a>
+            
+            <!-- Group Discussion -->
+            <a href="#" id="nav-group" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-users w-5"></i>
+                <span class="sidebar-text">Group Discussion</span>
+                <span class="ml-auto px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded-full sidebar-text">Coming Soon</span>
+            </a>
+            
+            <!-- Video Feedback -->
+            <a href="#" id="nav-video" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-video w-5"></i>
+                <span class="sidebar-text">Video Feedback</span>
+                <span class="ml-auto px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded-full sidebar-text">Coming Soon</span>
+            </a>
+            
+            <!-- Learning Reports -->
+            <a href="P-REPORT.html" id="nav-reports" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                <i class="fas fa-chart-line w-5"></i>
+                <span class="sidebar-text">Learning Reports</span>
+            </a>
+            
+            <!-- Teacher Section (Conditional) -->
+            <div id="teacher-section" class="mt-8 pt-4 border-t border-border-light">
+                <h3 class="px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3 sidebar-text">Teacher Tools</h3>
+                <a href="P-TEACHER_MATERIALS.html" id="nav-materials" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-file-alt w-5"></i>
+                    <span class="sidebar-text">Material Management</span>
+                </a>
+                <a href="P-STUDENT_OVERVIEW.html" id="nav-students" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-user-graduate w-5"></i>
+                    <span class="sidebar-text">Student Overview</span>
+                </a>
+                <a href="P-TEACHER_REPORTS.html" id="nav-teacher-reports" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-chart-bar w-5"></i>
+                    <span class="sidebar-text">Reports</span>
+                </a>
+            </div>
+
+            <!-- Admin Section (Conditional) -->
+            <div id="admin-section" class="mt-8 pt-4 border-t border-border-light hidden">
+                <h3 class="px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3 sidebar-text">Admin Tools</h3>
+                <a href="P-ADMIN_USER_MANAGE.html" id="nav-user-manage" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-users-cog w-5"></i>
+                    <span class="sidebar-text">User Management</span>
+                </a>
+                <a href="P-ADMIN_SYSTEM_CONFIG.html" id="nav-system-config" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-cogs w-5"></i>
+                    <span class="sidebar-text">System Config</span>
+                </a>
+                <a href="P-ADMIN_DATA_AUDIT.html" id="nav-data-audit" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-shield-alt w-5"></i>
+                    <span class="sidebar-text">Data Audit</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="ml-60 mt-16 p-8 min-h-screen transition-all duration-300">
+        <!-- Page Header -->
+        <div id="page-header" class="mb-8">
+            <nav id="breadcrumb" class="text-sm text-text-secondary mb-2">
+                <span>Home</span>
+            </nav>
+            <h1 id="page-title" class="text-3xl font-bold text-text-primary mb-2">Welcome back, John!</h1>
+            <p id="page-subtitle" class="text-text-secondary">Access your learning materials and tools</p>
+        </div>
+
+        <!-- Role-based Content Section -->
+
+        <!-- Teacher Role Content -->
+        <section id="teacher-content" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
+            <a href="P-TEACHER_MATERIALS.html" id="teacher-upload-materials" class="block bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-upload text-primary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">Upload Materials</h3>
+                <p class="text-sm text-text-secondary mb-4">Create and upload new learning materials</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">Get Started</span>
+                    <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+            </a>
+            
+            <a href="P-TEACHER_REPORTS.html" id="teacher-view-reports" class="block bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-secondary bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-chart-bar text-secondary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">View Class Reports</h3>
+                <p class="text-sm text-text-secondary mb-4">Analyze student performance and progress</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">View Now</span>
+                    <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+            </a>
+            
+            <div id="teacher-export-csv" class="bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-accent bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-file-csv text-accent text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">Export CSV</h3>
+                <p class="text-sm text-text-secondary mb-4">Download student data in CSV format</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">Export Data</span>
+                    <i class="fas fa-download text-primary"></i>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Student Role Content -->
+        <section id="student-content" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
+            <a href="P-MATERIAL_SELECT.html" id="student-current-tasks" class="block bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-tasks text-primary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">Current Tasks</h3>
+                <p class="text-sm text-text-secondary mb-4">Access your assigned learning materials</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">Continue Learning</span>
+                    <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+            </a>
+            
+            <div id="student-help-center" class="bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-secondary bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-question-circle text-secondary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">Help Center</h3>
+                <p class="text-sm text-text-secondary mb-4">Get assistance with platform features</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">Get Help</span>
+                    <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+            </div>
+            
+            <a href="P-REPORT.html" id="student-learning-tips" class="block bg-white rounded-xl shadow-card p-6 card-hover">
+                <div class="w-16 h-16 bg-accent bg-opacity-10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-lightbulb text-accent text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary mb-2">Learning Tips</h3>
+                <p class="text-sm text-text-secondary mb-4">Personalized suggestions for improvement</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-primary font-medium">View Tips</span>
+                    <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+            </a>
+        </section>
+
+        <!-- Learning Data Visualization -->
+        <div id="data-visualization" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Score Trends -->
+            <div id="score-trends" class="bg-white rounded-xl shadow-card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-text-primary">Score Trends</h3>
+                    <select id="trend-period" class="text-sm border border-border-light rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Last 3 months</option>
+                    </select>
+                </div>
+                
+                <!-- Trend Chart -->
+                <div id="trend-chart" class="h-64 flex items-end justify-between space-x-2 mb-4">
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 60%"></div>
+                        <span class="text-xs text-text-secondary">Mon</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 75%"></div>
+                        <span class="text-xs text-text-secondary">Tue</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 45%"></div>
+                        <span class="text-xs text-text-secondary">Wed</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 90%"></div>
+                        <span class="text-xs text-text-secondary">Thu</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 80%"></div>
+                        <span class="text-xs text-text-secondary">Fri</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 65%"></div>
+                        <span class="text-xs text-text-secondary">Sat</span>
+                    </div>
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 bg-primary rounded-t" style="height: 70%"></div>
+                        <span class="text-xs text-text-secondary">Sun</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-lg font-bold text-primary">8.5</div>
+                        <div class="text-xs text-text-secondary">Avg Score</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-green-600">+0.5</div>
+                        <div class="text-xs text-text-secondary">Weekly Gain</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-secondary">9.2</div>
+                        <div class="text-xs text-text-secondary">Best Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weakness Analysis -->
+            <div id="weakness-analysis" class="bg-white rounded-xl shadow-card p-6">
+                <h3 class="text-lg font-semibold text-text-primary mb-6">Areas for Improvement</h3>
+                
+                <!-- Progress Rings -->
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="text-center">
+                        <div class="relative w-24 h-24 mx-auto mb-3">
+                            <svg class="w-24 h-24 transform -rotate-90">
+                                <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"></circle>
+                                <circle cx="48" cy="48" r="40" stroke="#1B8C79" stroke-width="8" fill="none" 
+                                        stroke-dasharray="251.2" stroke-dashoffset="75.36" stroke-linecap="round"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-lg font-bold text-primary">70%</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-text-secondary">Grammar</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="relative w-24 h-24 mx-auto mb-3">
+                            <svg class="w-24 h-24 transform -rotate-90">
+                                <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"></circle>
+                                <circle cx="48" cy="48" r="40" stroke="#37436A" stroke-width="8" fill="none" 
+                                        stroke-dasharray="251.2" stroke-dashoffset="100.48" stroke-linecap="round"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-lg font-bold text-secondary">60%</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-text-secondary">Vocabulary</p>
+                    </div>
+                </div>
+                
+                <!-- Weakness Tags -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-text-primary">Past Tense Errors</span>
+                        <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <span class="text-xs text-text-secondary">75%</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-text-primary">Article Usage</span>
+                        <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <span class="text-xs text-text-secondary">60%</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-text-primary">Word Choice</span>
+                        <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                        <span class="text-xs text-text-secondary">45%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <section id="recent-activity" class="bg-white rounded-xl shadow-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">Recent Activity</h3>
+                <a href="P-REPORT.html" class="text-sm text-primary hover:text-secondary transition-colors">View All</a>
+            </div>
+            
+            <div id="activity-list" class="space-y-4">
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-primary bg-opacity-10 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-primary"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium text-text-primary">Completed tutoring session</h4>
+                        <p class="text-xs text-text-secondary">Material: ENG-2025-U3-A • Score: 8.9</p>
+                    </div>
+                    <span class="text-xs text-text-secondary">2 hours ago</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-secondary bg-opacity-10 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-secondary"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium text-text-primary">Submitted quiz</h4>
+                        <p class="text-xs text-text-secondary">Grammar Practice • Score: 9.2</p>
+                    </div>
+                    <span class="text-xs text-text-secondary">5 hours ago</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-accent bg-opacity-10 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-accent"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium text-text-primary">Learning report generated</h4>
+                        <p class="text-xs text-text-secondary">Weekly Progress Report</p>
+                    </div>
+                    <span class="text-xs text-text-secondary">1 day ago</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.querySelector('#sidebar-toggle');
+            const sidebar = document.querySelector('#sidebar');
+            const mainContent = document.querySelector('#main-content');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            sidebarToggle?.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                sidebar.classList.toggle('sidebar-expanded');
+                
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    mainContent.style.marginLeft = '56px';
+                    sidebarTexts.forEach(text => text.style.display = 'none');
+                } else {
+                    mainContent.style.marginLeft = '240px';
+                    sidebarTexts.forEach(text => text.style.display = 'block');
+                }
+            });
+
+            // User dropdown menu
+            const userMenuBtn = document.querySelector('#user-menu-btn');
+            const userDropdown = document.querySelector('#user-dropdown');
+            
+            userMenuBtn?.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                userDropdown?.classList.remove('show');
+            });
+
+            // Navigation links
+            document.querySelector('#nav-dashboard')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Already on dashboard, no action needed
+            });
+
+            document.querySelector('#nav-tutoring')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-MATERIAL_SELECT.html';
+            });
+
+            document.querySelector('#nav-reports')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-REPORT.html';
+            });
+
+            document.querySelector('#nav-materials')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-TEACHER_MATERIALS.html';
+            });
+
+            document.querySelector('#nav-students')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-STUDENT_OVERVIEW.html';
+            });
+
+            document.querySelector('#nav-teacher-reports')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-TEACHER_REPORTS.html';
+            });
+
+            document.querySelector('#nav-user-manage')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-ADMIN_USER_MANAGE.html';
+            });
+
+            document.querySelector('#nav-system-config')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-ADMIN_SYSTEM_CONFIG.html';
+            });
+
+            document.querySelector('#nav-data-audit')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-ADMIN_DATA_AUDIT.html';
+            });
+
+            // Function cards
+            document.querySelector('#card-tutoring')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-MATERIAL_SELECT.html';
+            });
+
+            // User actions
+            document.querySelector('#user-settings')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('需要实现个人设置功能');
+                // 注释：个人设置功能需要单独的设置页面，在当前版本中暂未实现
+            });
+
+            document.querySelector('#user-logout')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-AUTH.html';
+            });
+
+            // Recent activity view all link
+            document.querySelector('#recent-activity a')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-REPORT.html';
+            });
+
+            // Search functionality
+            document.querySelector('#global-search')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value.trim();
+                    if (searchTerm) {
+                        console.log('搜索:', searchTerm);
+                        // 注释：搜索功能需要后端API支持，在当前版本中仅做UI展示
+                    }
+                }
+            });
+
+            // Trend period selector
+            document.querySelector('#trend-period')?.addEventListener('change', function() {
+                const selectedPeriod = this.value;
+                console.log('切换趋势周期:', selectedPeriod);
+                // 注释：趋势数据更新需要后端API支持，在当前版本中仅做UI展示
+            });
+
+            // Notifications
+            document.querySelector('#notifications-btn')?.addEventListener('click', function() {
+                console.log('查看通知');
+                // 注释：通知功能需要后端API支持，在当前版本中仅做UI展示
+            });
+
+            // Role-based menu display
+            // 注释：角色判断逻辑需要后端支持，这里模拟显示教师菜单
+            // 在实际应用中，这里会根据用户角色动态显示相应的菜单
+            const userRole = 'student'; // Can be 'student', 'teacher', 'admin'
+            
+            if (userRole === 'teacher') {
+                document.querySelector('#teacher-section')?.classList.remove('hidden');
+                document.querySelector('#admin-section')?.classList.add('hidden');
+                document.querySelector('#teacher-content')?.classList.remove('hidden');
+                document.querySelector('#student-content')?.classList.add('hidden');
+            } else if (userRole === 'admin') {
+                document.querySelector('#teacher-section')?.classList.add('hidden');
+                document.querySelector('#admin-section')?.classList.remove('hidden');
+                document.querySelector('#teacher-content')?.classList.add('hidden');
+                document.querySelector('#student-content')?.classList.add('hidden');
+            } else {
+                document.querySelector('#teacher-section')?.classList.add('hidden');
+                document.querySelector('#admin-section')?.classList.add('hidden');
+                document.querySelector('#teacher-content')?.classList.add('hidden');
+                document.querySelector('#student-content')?.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

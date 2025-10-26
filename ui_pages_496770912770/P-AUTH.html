@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BNBU EAP English Teaching Assistant</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1B8C79',
+                        secondary: '#37436A', 
+                        accent: '#080D1E',
+                        'text-primary': '#1F2937',
+                        'text-secondary': '#6B7280',
+                        'bg-light': '#F9FAFB',
+                        'border-light': '#E5E7EB'
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'login': '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .form-input-focus:focus {
+            outline: none;
+            border-color: #1B8C79;
+            box-shadow: 0 0 0 3px rgba(27, 140, 121, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background-color: #166A5A;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(27, 140, 121, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .error-message {
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .input-error {
+            border-color: #EF4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-bg-light via-white to-primary bg-opacity-10 min-h-screen">
+    <!-- Background Decorative Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 w-32 h-32 bg-primary bg-opacity-5 rounded-full floating-animation"></div>
+        <div class="absolute top-40 right-20 w-24 h-24 bg-secondary bg-opacity-5 rounded-full floating-animation" style="animation-delay: -2s;"></div>
+        <div class="absolute bottom-32 left-1/4 w-28 h-28 bg-accent bg-opacity-5 rounded-full floating-animation" style="animation-delay: -4s;"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <!-- Login Card -->
+            <div id="login-card" class="bg-white rounded-2xl shadow-login p-8 w-full">
+                <!-- Logo and Brand -->
+                <div id="login-brand" class="text-center mb-8">
+                    <div id="login-logo" class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                    </div>
+                    <h1 id="login-title" class="text-2xl font-bold text-text-primary mb-2">BNBU EAP</h1>
+                    <p id="login-subtitle" class="text-text-secondary">English Teaching Assistant</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-6">
+                    <!-- Error Message -->
+                    <div id="error-message" class="error-message bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <span id="error-text">Invalid username or password. Please try again.</span>
+                    </div>
+
+                    <!-- Username/Email Field -->
+                    <div id="username-field" class="space-y-2">
+                        <label for="username" class="block text-sm font-medium text-text-primary">
+                            Username or Email
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg form-input-focus transition-all duration-200"
+                                placeholder="Enter your username or email"
+                                required
+                                autocomplete="username"
+                            >
+                            <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div id="password-field" class="space-y-2">
+                        <label for="password" class="block text-sm font-medium text-text-primary">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="w-full pl-10 pr-12 py-3 border border-border-light rounded-lg form-input-focus transition-all duration-200"
+                                placeholder="Enter your password"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"></i>
+                            <button 
+                                type="button" 
+                                id="toggle-password" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-primary transition-colors"
+                            >
+                                <i class="fas fa-eye" id="password-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me and Forgot Password -->
+                    <div id="login-options" class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="remember-me" 
+                                class="w-4 h-4 text-primary border-border-light rounded focus:ring-primary focus:ring-2"
+                            >
+                            <span class="ml-2 text-sm text-text-secondary">Remember me</span>
+                        </label>
+                        <a 
+                            href="#" 
+                            id="forgot-password-link" 
+                            class="text-sm text-primary hover:text-secondary transition-colors"
+                        >
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button 
+                        type="submit" 
+                        id="login-button" 
+                        class="w-full bg-primary text-white py-3 px-4 rounded-lg font-medium btn-primary transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-20"
+                    >
+                        <span id="login-button-text">Sign In</span>
+                        <i id="login-loading" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                    </button>
+                </form>
+
+                <!-- Help Section -->
+                <div id="login-help" class="mt-6 text-center">
+                    <p class="text-sm text-text-secondary">
+                        Need help? 
+                        <a href="#" class="text-primary hover:text-secondary transition-colors">Contact support</a>
+                    </p>
+                </div>
+
+                <!-- Help Section -->
+                <div id="login-help" class="mt-6 text-center">
+                    <p class="text-sm text-text-secondary">
+                        Need help? 
+                        <a href="#" class="text-primary hover:text-secondary transition-colors">Contact support</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div id="login-footer" class="text-center mt-8">
+                <p class="text-xs text-text-secondary">
+                    © 2024 BNBU EAP English Teaching Assistant. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form elements
+            const loginForm = document.querySelector('#login-form');
+            const usernameInput = document.querySelector('#username');
+            const passwordInput = document.querySelector('#password');
+            const loginButton = document.querySelector('#login-button');
+            const loginButtonText = document.querySelector('#login-button-text');
+            const loginLoading = document.querySelector('#login-loading');
+            const errorMessage = document.querySelector('#error-message');
+            const errorText = document.querySelector('#error-text');
+            const togglePasswordButton = document.querySelector('#toggle-password');
+            const passwordEye = document.querySelector('#password-eye');
+            const forgotPasswordLink = document.querySelector('#forgot-password-link');
+
+            // Password visibility toggle
+            togglePasswordButton.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                if (type === 'text') {
+                    passwordEye.classList.remove('fa-eye');
+                    passwordEye.classList.add('fa-eye-slash');
+                } else {
+                    passwordEye.classList.remove('fa-eye-slash');
+                    passwordEye.classList.add('fa-eye');
+                }
+            });
+
+            // Input validation and error clearing
+            function clearError() {
+                errorMessage.classList.remove('show');
+                usernameInput.classList.remove('input-error');
+                passwordInput.classList.remove('input-error');
+            }
+
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.classList.add('show');
+                usernameInput.classList.add('input-error');
+                passwordInput.classList.add('input-error');
+            }
+
+            function validateInput(input) {
+                if (!input.value.trim()) {
+                    input.classList.add('input-error');
+                    return false;
+                }
+                input.classList.remove('input-error');
+                return true;
+            }
+
+            // Input validation on blur
+            usernameInput.addEventListener('blur', function() {
+                validateInput(this);
+            });
+
+            passwordInput.addEventListener('blur', function() {
+                validateInput(this);
+            });
+
+            // Input validation on input (clear errors)
+            usernameInput.addEventListener('input', function() {
+                if (this.classList.contains('input-error')) {
+                    validateInput(this);
+                }
+                if (errorMessage.classList.contains('show')) {
+                    clearError();
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                if (this.classList.contains('input-error')) {
+                    validateInput(this);
+                }
+                if (errorMessage.classList.contains('show')) {
+                    clearError();
+                }
+            });
+
+            // Form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Clear previous errors
+                clearError();
+                
+                // Validate inputs
+                const isUsernameValid = validateInput(usernameInput);
+                const isPasswordValid = validateInput(passwordInput);
+                
+                if (!isUsernameValid || !isPasswordValid) {
+                    showError('Please fill in all required fields.');
+                    return;
+                }
+                
+                // Show loading state
+                loginButton.disabled = true;
+                loginButtonText.textContent = 'Signing In...';
+                loginLoading.classList.remove('hidden');
+                
+                // Simulate login process
+                setTimeout(function() {
+                    // For demo purposes, we'll always redirect to the entry page
+                    // In a real application, this would validate credentials against a server
+                    window.location.href = 'P-ENTRY.html';
+                }, 1500);
+            });
+
+            // Forgot password link
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('需要实现忘记密码功能');
+                // In a real application, this would navigate to a forgot password page
+                alert('Forgot password functionality will be implemented in future versions.');
+            });
+
+            // Keyboard navigation
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                // Enter key to submit form when focused on password field
+                if (e.key === 'Enter' && (usernameInput === document.activeElement || passwordInput === document.activeElement)) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+                
+                // Escape key to clear errors
+                if (e.key === 'Escape' && errorMessage.classList.contains('show')) {
+                    clearError();
+                }
+            });
+
+            // Focus management
+            usernameInput.focus();
+        });
+    </script>
+</body>
+</html>
