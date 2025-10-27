@@ -62,7 +62,15 @@ export default function LoginPage() {
     
     // 设置认证信息
     const { password: _, ...userData } = user;
+    console.log('Calling setAuth with:', userData);
     setAuth(userData as User, token);
+    
+    // 验证是否保存成功
+    setTimeout(() => {
+      const savedUser = localStorage.getItem('user');
+      const savedToken = localStorage.getItem('token');
+      console.log('Saved to localStorage:', { savedUser, savedToken });
+    }, 100);
     
     // 根据角色跳转
     setLoading(false);

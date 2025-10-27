@@ -26,9 +26,16 @@ export default function ChatPage() {
     }, 100);
   }, [initAuth]);
 
+  // 添加调试日志
+  useEffect(() => {
+    console.log('User from authStore:', user);
+    console.log('User ID:', user?.id);
+  }, [user]);
+
   // 检查用户登录状态（在 initAuth 完成后）
   useEffect(() => {
     if (mounted && authChecked && !user) {
+      console.log('No user found, redirecting to login');
       router.push('/auth/login');
     }
   }, [mounted, authChecked, user, router]);
