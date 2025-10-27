@@ -65,10 +65,12 @@ export default function LoginPage() {
     console.log('Calling setAuth with:', userData);
     setAuth(userData as User, token);
     
-    // 验证是否保存成功
+    // 验证是否保存成功 - 调试当前域名
     setTimeout(() => {
       const savedUser = localStorage.getItem('user');
       const savedToken = localStorage.getItem('token');
+      console.log('Current URL:', window.location.href);
+      console.log('LocalStorage keys:', Object.keys(localStorage));
       console.log('Saved to localStorage:', { savedUser, savedToken });
     }, 100);
     
