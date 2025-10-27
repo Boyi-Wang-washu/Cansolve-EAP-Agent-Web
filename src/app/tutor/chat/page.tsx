@@ -11,22 +11,30 @@ import { useRouter } from 'next/navigation';
 export default function ChatPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const initAuth = useAuthStore((state) => state.initAuth);
   const [mounted, setMounted] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // 防止水合错误
+  // 防止水合错误 + 初始化认证
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // 确保从 localStorage 恢复用户信息
+    initAuth();
+    // 延迟检查，给 initAuth 时间完成
+    setTimeout(() => {
+      setAuthChecked(true);
+    }, 100);
+  }, [initAuth]);
 
-  // 检查用户登录状态
+  // 检查用户登录状态（在 initAuth 完成后）
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && authChecked && !user) {
       router.push('/auth/login');
     }
-  }, [mounted, user, router]);
+  }, [mounted, authChecked, user, router]);
 
-  // 加载中状态
-  if (!mounted || !user) {
+  // 加载中状态（等待认证检查完成）
+  if (!mounted || !authChecked || !user) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-screen">
