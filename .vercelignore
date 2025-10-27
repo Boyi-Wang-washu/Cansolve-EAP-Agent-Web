@@ -1,0 +1,24 @@
+# Vercel 构建时忽略的文件和目录
+
+# 文档和说明文件
+*.md
+!README.md
+
+# UI 原型文件（已完成，不需要部署）
+ui_pages_496770912770/
+
+# 后端代码（单独部署）
+backend/
+
+# 临时和测试文件
+COPY_TO_NEXTJS/
+check_flask_ready.md
+
+# Python 相关
+*.pyc
+__pycache__/
+
+# 开发文件
+.env
+.env.local
+
