@@ -11,37 +11,35 @@ import { useRouter } from 'next/navigation';
 export default function ChatPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const isLoading = useAuthStore((state) => state.isLoading);  // ← 使用 isLoading
   const initAuth = useAuthStore((state) => state.initAuth);
   const [mounted, setMounted] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
 
   // 防止水合错误 + 初始化认证
   useEffect(() => {
     setMounted(true);
     // 确保从 localStorage 恢复用户信息
     initAuth();
-    // 延迟检查，给 initAuth 时间完成
-    setTimeout(() => {
-      setAuthChecked(true);
-    }, 100);
   }, [initAuth]);
 
   // 添加调试日志
   useEffect(() => {
     console.log('User from authStore:', user);
     console.log('User ID:', user?.id);
-  }, [user]);
+    console.log('isLoading:', isLoading);
+  }, [user, isLoading]);
 
-  // 检查用户登录状态（在 initAuth 完成后）
+  // 检查用户登录状态（等待 isLoading 完成）
   useEffect(() => {
-    if (mounted && authChecked && !user) {
+    // 只有在加载完成后才检查
+    if (!isLoading && !user) {
       console.log('No user found, redirecting to login');
       router.push('/auth/login');
     }
-  }, [mounted, authChecked, user, router]);
+  }, [isLoading, user, router]);
 
   // 加载中状态（等待认证检查完成）
-  if (!mounted || !authChecked || !user) {
+  if (!mounted || isLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-screen">
