@@ -34,9 +34,9 @@ export default function Sidebar() {
               Learning
             </h3>
             <Link 
-              href="/tutor" 
+              href="/tutor/chat" 
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive('/tutor') 
+                pathname?.startsWith('/tutor/chat')
                   ? 'nav-item-active' 
                   : 'text-text-secondary hover:bg-gray-50 hover:text-primary'
               }`}

@@ -18,8 +18,8 @@ export default function LoginPage() {
   const mockUsers = {
     'student001': {
       id: 's001',
-      name: 'Alice Wang',
-      email: 'alice.wang@student.bnbu.edu',
+      name: 'Boyi Wang',
+      email: 'boyi.wang@student.bnbu.edu',
       role: UserRole.STUDENT,
       class_id: 'EAP-2024-A',
       password: 'student123',

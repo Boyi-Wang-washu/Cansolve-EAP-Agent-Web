@@ -97,7 +97,7 @@ export default function DashboardPage() {
           {user?.role === UserRole.STUDENT && (
             <>
               <a 
-                href="/tutor/select-material" 
+                href="/tutor/chat" 
                 className="flex items-center space-x-4 p-4 border border-border-light rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
