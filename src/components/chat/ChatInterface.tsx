@@ -78,7 +78,9 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
 
     try {
       // 流式调用 API（Server-Sent Events）
-      const API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:5000';
+      const API_URL = typeof window !== 'undefined' 
+        ? (process.env.NEXT_PUBLIC_CHAT_API_URL || 'https://eap-1v1-ai-tutor.onrender.com')
+        : 'https://eap-1v1-ai-tutor.onrender.com';
       const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: {
