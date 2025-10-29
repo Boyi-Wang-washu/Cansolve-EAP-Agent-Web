@@ -1,6 +1,6 @@
 // API 调用封装 - 与 Flask 后端通信
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:5000';
+const API_BASE_URL = 'https://eap-1v1-ai-tutor.onrender.com';
 
 export interface ChatMessage {
   id: string;
