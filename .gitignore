@@ -56,3 +56,6 @@ pip-delete-this-directory.txt
 # Uploads (if you want to exclude uploaded files)
 backend/uploads/
 uploads/
+
+# COPY_TO_NEXTJS - 包含示例代码，不应该被构建
+COPY_TO_NEXTJS/
