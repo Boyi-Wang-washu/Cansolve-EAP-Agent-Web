@@ -47,7 +47,7 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
-  // 发送消息
+  // 发送消息（支持流式输出）
   const handleSend = async (message: string) => {
     if (!userId) {
       setError('User not logged in');
@@ -66,31 +66,100 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    try {
-      // 调用 API
-      const response = await sendChatMessage(message, userId);
+    // 创建 AI 回复占位符
+    const botMessageId = (Date.now() + 1).toString();
+    const botMessage: ChatMessageType = {
+      id: botMessageId,
+      type: 'bot',
+      content: '',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, botMessage]);
 
-      // 添加 AI 回复
-      const botMessage: ChatMessageType = {
-        id: response.message_id,
-        type: 'bot',
-        content: response.response,
-        timestamp: new Date().toISOString(),
-        token_usage: response.token_usage,
-      };
-      setMessages((prev) => [...prev, botMessage]);
+    try {
+      // 流式调用 API（Server-Sent Events）
+      const API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-ID': userId,
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      // 读取 Server-Sent Events 流
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.type === 'delta' && data.chunk) {
+                  // 增量更新 - 实时显示（打字机效果）
+                  fullResponse += data.chunk;
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === botMessageId
+                        ? { ...msg, content: fullResponse }
+                        : msg
+                    )
+                  );
+                } else if (data.type === 'complete') {
+                  // 完成信号 - 更新 token 使用量
+                  if (data.token_usage) {
+                    setMessages((prev) =>
+                      prev.map((msg) =>
+                        msg.id === botMessageId
+                          ? { ...msg, token_usage: data.token_usage }
+                          : msg
+                      )
+                    );
+                  }
+                } else if (data.error) {
+                  // 错误处理
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === botMessageId
+                        ? { ...msg, content: data.error }
+                        : msg
+                    )
+                  );
+                }
+              } catch (e) {
+                console.error('Parse error:', e);
+              }
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error('Failed to send message:', err);
       setError(err instanceof Error ? err.message : 'Failed to send message');
 
-      // 添加错误消息
-      const errorMessage: ChatMessageType = {
-        id: Date.now().toString(),
-        type: 'bot',
-        content: 'Sorry, I encountered an error. Please try again.',
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      // 更新占位符为错误消息
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === botMessageId
+            ? { ...msg, content: 'Sorry, I encountered an error. Please try again.' }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
     }
