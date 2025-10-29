@@ -39,7 +39,7 @@ export default function ChatPage() {
   }, [isLoading, user, router]);
 
   // 加载中状态（等待认证检查完成）
-  if (!mounted || isLoading) {
+  if (!mounted || isLoading || !user) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-screen">
