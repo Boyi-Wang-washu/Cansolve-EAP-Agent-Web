@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { sendChatMessage, getChatHistory, clearChatHistory } from '@/lib/chatApi';
+import { getChatHistory, clearChatHistory } from '@/lib/chatApi';
 import { ChatMessage as ChatMessageType } from '@/types/chat';
 
 interface ChatInterfaceProps {
