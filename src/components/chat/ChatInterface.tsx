@@ -66,8 +66,8 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    // 创建 AI 回复占位符
-    const botMessageId = (Date.now() + 1).toString();
+    // 创建 AI 回复占位符（必须有 botMessageId）
+    const botMessageId = `${Date.now() + 1}`;
     const botMessage: ChatMessageType = {
       id: botMessageId,
       type: 'bot',
